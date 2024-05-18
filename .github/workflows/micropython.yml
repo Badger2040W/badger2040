@@ -107,7 +107,7 @@ jobs:
     # Check out Pimoroni Pico
     - uses: actions/checkout@v4
       with:
-        repository: pimoroni/pimoroni-pico
+        repository: Badger2040W/pimoroni-pico # Use local Fork
         ref: ${{env.PIMORONI_PICO_VERSION}}
         submodules: true
         path: pimoroni-pico
