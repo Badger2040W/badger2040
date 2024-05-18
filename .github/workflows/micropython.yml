@@ -30,7 +30,7 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       uses: actions/checkout@v4
       with:
-        repository: micropython/micropython
+        repository: Badger2040W/micropython
         ref: ${{env.MICROPYTHON_VERSION}}
         submodules: false  # MicroPython submodules are hideously broken
         path: micropython
