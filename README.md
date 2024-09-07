@@ -9,7 +9,7 @@ Badger 2040 and Badger 2040 W are maker-friendly all-in-one badge wearables, fea
 
 ## Install
 
-Grab the latest release from [https://github.com/pimoroni/badger2040/releases/latest](https://github.com/pimoroni/badger2040/releases/latest)
+Grab the latest release from [https://github.com/Bager2040W/badger2040/releases/latest](https://github.com/Badger2040W/badger2040/releases/latest)
 
 There are four .uf2 files to pick from.
 
