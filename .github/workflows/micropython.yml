@@ -127,11 +127,11 @@ jobs:
       run: |
         git apply "${{env.FIRMWARE_DIR}}/startup_overclock.patch"
 
-    - name: "HACK: MicroPython out of tree board pins.csv fix"
-      shell: bash
-      working-directory: micropython
-      run: |
-        git apply "${{env.FIRMWARE_DIR}}/932f76c6ba64c5a3e68de3324556d9979f09303b.patch"
+#    - name: "HACK: MicroPython out of tree board pins.csv fix"
+#      shell: bash
+#      working-directory: micropython
+#      run: |
+#        git apply "${{env.FIRMWARE_DIR}}/932f76c6ba64c5a3e68de3324556d9979f09303b.patch"
 
     # Install apt packages
     - name: Install CCache & Compiler
