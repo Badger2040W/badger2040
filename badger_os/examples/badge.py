@@ -1,8 +1,8 @@
-import badger2040
-import jpegdec
-import pngdec
-import qrcode
 import math
+import badger2040 # type: ignore
+import jpegdec # type: ignore
+import pngdec # type: ignore
+import qrcode # type: ignore
 
 # Global Constants
 WIDTH = badger2040.WIDTH
@@ -26,9 +26,9 @@ DETAIL_SPACING = 10
 BADGE_PATH = "/badges/badge.txt"
 
 DEFAULT_TEXT = """Auth0 by Okta
-Advocate Name
+Developer Advocate
 Event
-The Event
+Some Event
 https://a0.to/do
 """
 
@@ -51,7 +51,7 @@ def truncatestring(text, text_size, width):
 # ------------------------------
 
 def measure_qr_code(size, code):
-    w, h = code.get_size()
+    w = code.get_size()
     module_size = int(size / w)
     return module_size * w, module_size
 
@@ -77,14 +77,14 @@ def draw_badge():
 
     try:
         # Generate QRCode
-        code = qrcode.QRCode()
+        code = qrcode.QRCode() # type: ignore
         code.set_text(badge_url)
         size, _ = measure_qr_code(128, code)
         left = WIDTH - 124
         top = int((HEIGHT / 2) - (size / 2))
         draw_qr_code(left, top, 128, code)        
     except (OSError, RuntimeError):
-        code = qrcode.QRCode()
+        code = qrcode.QRCode() # type: ignore
 
     # Draw a border around the image
     display.set_pen(0)
@@ -166,8 +166,7 @@ badge_url = badge.readline()
 company = truncatestring(company, COMPANY_TEXT_SIZE, TEXT_WIDTH)
 
 detail_title = truncatestring(detail_title, DETAILS_TEXT_SIZE, TEXT_WIDTH)
-detail_text = truncatestring(detail_text, DETAILS_TEXT_SIZE,
-                              TEXT_WIDTH - DETAIL_SPACING - display.measure_text(detail_title, DETAILS_TEXT_SIZE))
+detail_text = truncatestring(detail_text, DETAILS_TEXT_SIZE, TEXT_WIDTH - DETAIL_SPACING - display.measure_text(detail_title, DETAILS_TEXT_SIZE))
 
 # ------------------------------
 #       Main program
