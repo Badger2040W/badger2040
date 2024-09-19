@@ -1,7 +1,5 @@
-mustelid inc
-H. Badger
-RP2040
-2MB Flash
-E ink
-296x128px
-/badges/badge.jpg
+Auth0 by Okta
+Developer Advocate
+Event
+Some Event
+https://a0.to/do
