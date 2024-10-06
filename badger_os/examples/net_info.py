@@ -28,6 +28,10 @@ display.set_pen(0)
 y = 35 + int(LINE_HEIGHT / 2)
 
 if net:
+    nets = network.WLAN(network.STA_IF).scan()
+    print("Networks =", nets)
+    for _net in nets:
+        print(_net[0].decode("utf-8"))
     display.text("> LOCAL IP: {}".format(net[0]), 0, y, WIDTH)
     y += LINE_HEIGHT
     display.text("> Subnet: {}".format(net[1]), 0, y, WIDTH)
