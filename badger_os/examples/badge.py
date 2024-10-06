@@ -1,8 +1,9 @@
+import badger2040
+import jpegdec
+import pngdec
+import qrcode
 import math
-import badger2040 # type: ignore
-import jpegdec # type: ignore
-import pngdec # type: ignore
-import qrcode # type: ignore
+
 
 # Global Constants
 WIDTH = badger2040.WIDTH
@@ -10,31 +11,30 @@ HEIGHT = badger2040.HEIGHT
 
 IMAGE_WIDTH = 128
 
-COMPANY_PADDING = 8
-COMPANY_HEIGHT = 30
-DETAILS_HEIGHT = 20
-NAME_HEIGHT = HEIGHT - COMPANY_HEIGHT - (DETAILS_HEIGHT) - 2
+EVENT_PADDING = 20
+EVENT_HEIGHT = 30
+TITLE_HEIGHT = 20
+NAME_HEIGHT = HEIGHT - EVENT_HEIGHT - (TITLE_HEIGHT) - 2
 TEXT_WIDTH = WIDTH - IMAGE_WIDTH - 1
 
-COMPANY_TEXT_SIZE = 0.6
-DETAILS_TEXT_SIZE = 0.5
+EVENT_TEXT_SIZE = 0.6
+TITLE_TEXT_SIZE = 0.5
 
-LEFT_PADDING = 5
 NAME_PADDING = 20
-DETAIL_SPACING = 10
+TITLE_SPACING = 10
 
 BADGE_PATH = "/badges/badge.txt"
 
 DEFAULT_TEXT = """Auth0 by Okta
+Peter Fernandez
 Developer Advocate
-Event
-Some Event
 https://a0.to/do
 """
 
 # ------------------------------
 #      Utility functions
 # ------------------------------
+
 
 # Reduce the size of a string until it fits within a given width
 def truncatestring(text, text_size, width):
@@ -51,7 +51,7 @@ def truncatestring(text, text_size, width):
 # ------------------------------
 
 def measure_qr_code(size, code):
-    w = code.get_size()
+    w, h = code.get_size()
     module_size = int(size / w)
     return module_size * w, module_size
 
@@ -77,14 +77,14 @@ def draw_badge():
 
     try:
         # Generate QRCode
-        code = qrcode.QRCode() # type: ignore
+        code = qrcode.QRCode()
         code.set_text(badge_url)
         size, _ = measure_qr_code(128, code)
         left = WIDTH - 124
         top = int((HEIGHT / 2) - (size / 2))
         draw_qr_code(left, top, 128, code)        
     except (OSError, RuntimeError):
-        code = qrcode.QRCode() # type: ignore
+        code = qrcode.QRCode()
 
     # Draw a border around the image
     display.set_pen(0)
@@ -93,18 +93,19 @@ def draw_badge():
     display.line(WIDTH - IMAGE_WIDTH, HEIGHT - 1, WIDTH - 1, HEIGHT - 1)
     display.line(WIDTH - 1, 0, WIDTH - 1, HEIGHT - 1)
 
-    # Uncomment this if a white background is wanted behind the company
+    # Uncomment this if a white background is wanted behind the event
     # display.set_pen(15)
-    # display.rectangle(1, 1, TEXT_WIDTH, COMPANY_HEIGHT - 1)
+    # display.rectangle(1, 1, TEXT_WIDTH, EVENT_HEIGHT - 1)
 
-    # Draw the company
+    # Draw the event
     display.set_pen(15)  # Change this to 0 if a white background is used
     display.set_font("serif")
-    display.text(company, COMPANY_PADDING + LEFT_PADDING, (COMPANY_HEIGHT // 2) + 1, WIDTH, COMPANY_TEXT_SIZE)
+    event_padding = (TEXT_WIDTH - display.measure_text(event, EVENT_TEXT_SIZE)) // 2    
+    display.text(event, event_padding + 3, (EVENT_HEIGHT // 2) + 1, WIDTH, EVENT_TEXT_SIZE)
 
     # Draw a white background behind the name
     display.set_pen(15)
-    display.rectangle(1, COMPANY_HEIGHT + 1, TEXT_WIDTH, NAME_HEIGHT)
+    display.rectangle(1, EVENT_HEIGHT + 1, TEXT_WIDTH, NAME_HEIGHT)
 
     # Draw the name, scaling it based on the available width
     display.set_pen(0)
@@ -113,25 +114,25 @@ def draw_badge():
     for name in names:
         name_size = 2.0  # A sensible starting scale
         while True:
-            name_length = display.measure_text(name, name_size)
-            if name_length >= (TEXT_WIDTH - NAME_PADDING) and name_size >= 0.1:
+            name_padding = display.measure_text(name, name_size)
+            if name_padding >= (TEXT_WIDTH - NAME_PADDING) and name_size >= 0.1:
                 name_size -= 0.01
             else:
-                display.text(name, (TEXT_WIDTH - name_length) // 2, (NAME_HEIGHT // 2) + COMPANY_HEIGHT + name_offset, WIDTH, name_size)
+                display.text(name, (TEXT_WIDTH - name_padding) // 2, (NAME_HEIGHT // 2) + EVENT_HEIGHT + name_offset, WIDTH, name_size)
                 name_offset += math.ceil(10 * name_size) + 15
                 break
 
-    # Draw a white backgrounds behind the details
+    # Draw a white backgrounds behind the title
     display.set_pen(15)
-    display.rectangle(1, HEIGHT - DETAILS_HEIGHT, TEXT_WIDTH, DETAILS_HEIGHT - 1)
+    display.rectangle(1, HEIGHT - TITLE_HEIGHT, TEXT_WIDTH, TITLE_HEIGHT - 1)
 
-    # Draw the second detail's title and text
+    # Draw the title text
     display.set_pen(0)
     display.set_font("sans")    
-    name_length = display.measure_text(detail_text, DETAILS_TEXT_SIZE) // 4
-    display.text(detail_text, LEFT_PADDING + name_length + DETAIL_SPACING, HEIGHT - (DETAILS_HEIGHT // 2), WIDTH, DETAILS_TEXT_SIZE)
+    display.text(title_text, TITLE_SPACING, HEIGHT - (TITLE_HEIGHT // 2), WIDTH, TITLE_TEXT_SIZE)
 
     display.update()
+
 
 # ------------------------------
 #        Program setup
@@ -156,17 +157,15 @@ except OSError:
     badge = open(BADGE_PATH, "r")
 
 # Read in the next 6 lines
-company = badge.readline()        
-names = badge.readline().split()  
-detail_title = badge.readline()   
-detail_text = badge.readline()    
-badge_url = badge.readline()     
+event = badge.readline()        
+names = badge.readline().split()
+title_text = badge.readline()    
+badge_url = badge.readline() 
 
 # Truncate all of the text (except for the name as that is scaled)
-company = truncatestring(company, COMPANY_TEXT_SIZE, TEXT_WIDTH)
+event = truncatestring(event, EVENT_TEXT_SIZE, TEXT_WIDTH)
 
-detail_title = truncatestring(detail_title, DETAILS_TEXT_SIZE, TEXT_WIDTH)
-detail_text = truncatestring(detail_text, DETAILS_TEXT_SIZE, TEXT_WIDTH - DETAIL_SPACING - display.measure_text(detail_title, DETAILS_TEXT_SIZE))
+title_text = truncatestring(title_text, TITLE_TEXT_SIZE, TEXT_WIDTH - TITLE_SPACING)
 
 # ------------------------------
 #       Main program
